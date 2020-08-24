@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
-import 'package:timezone/browser.dart';
 class CLockPage extends StatefulWidget {
   CLockPage({Key key, this.title}) : super(key: key) {}
   final String title;

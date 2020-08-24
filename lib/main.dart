@@ -66,29 +66,22 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             )),
             Positioned(
-                bottom: 0,
-                child: FlatButton(
-                  height: 80,
-                  minWidth: 360,
-                  onPressed: () {
-                    print("you should open alarm page.");
-                  },
-                  child: Text(""),
-                ))
+                child: Column(
+              children: [],
+            ))
           ],
         ),
       ),
       drawer: _mainpage.getDrawer(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.startTop,
-      // floatingActionButton: FloatingActionButton(
-      //   elevation: 0,
-      //   backgroundColor: Colors.transparent,
-      //   foregroundColor: Colors.white70,
-      //   onPressed: () {
-      //   },
-      //   tooltip: 'Increment',
-      //   child: Icon(Icons.list),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white70,
+        onPressed: () {},
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
