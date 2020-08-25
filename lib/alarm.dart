@@ -10,7 +10,7 @@ class Record {
     if (a._minute > b._minute) return 1;
     return 0;
   }
-}
+}//这个是闹钟的记录方式，暂时只有时，分这两个单位，
 
 class Alarm {
   List<Record> alarms = [];
@@ -21,7 +21,7 @@ class Alarm {
       return alarms.sublist(alarms.length - num, alarms.length - 1);
     return alarms;
   }
-}
+}//这个是时钟类，需要全局的存活时间，必要的话可以写到文件里
 
 class NotifyPage extends StatefulWidget {
   NotifyPage({Key key, this.title}) : super(key: key);
@@ -30,7 +30,7 @@ class NotifyPage extends StatefulWidget {
 
   @override
   _NotifyPageState createState() => _NotifyPageState();
-}
+}//主页的最近几条闹钟的提醒页面
 
 class _NotifyPageState extends State<NotifyPage> {
   Alarm _alarm;
@@ -53,7 +53,7 @@ class _NotifyPageState extends State<NotifyPage> {
             ),
           );
         else
-          return Text(
+          return Text(//TODO这里可以优化文本显示
             "empty",
             style: TextStyle(color: Colors.white70),
           );
@@ -77,7 +77,7 @@ class ShowRow extends StatefulWidget {
   final String title;
   @override
   _ShowRowState createState() => _ShowRowState();
-}
+}//这里是闹钟界面
 
 class _ShowRowState extends State<ShowRow> {
   @override
@@ -140,7 +140,7 @@ class _AlarmCreatePageState extends State<AlarmCreatePage> {
               child: Container(
                 height: 200,
                 width: 50,
-                child: ListView.separated(
+                child: ListView.separated(//TODO这里只是实现了可选择的时间展示，但是不能实际得到选择的时间。
                     itemBuilder: (context, index) {
                       return ListTile(
                         title: Text(
@@ -186,7 +186,7 @@ class _AlarmCreatePageState extends State<AlarmCreatePage> {
               ))
         ,Positioned(child: Container(
           child: ListView(children: [
-            
+            //TODO在这里加上闹钟的其他参数选择栏
           ],),
         ))
         ],
