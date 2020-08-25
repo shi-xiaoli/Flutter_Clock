@@ -6,7 +6,6 @@ import 'package:flutter_weather_icons/flutter_weather_icons.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:http/http.dart' as http;
-import 'weather.dart';
 
 const key = 'a17d10bd349e432d99228b4331ed7628';
 
