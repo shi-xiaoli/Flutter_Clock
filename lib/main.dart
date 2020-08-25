@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'clock.dart';
 import 'stopwatch.dart';
+import 'alarm.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,6 +23,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "StopWatch": (context) => StopWatchPage(),
         "Home": (context) => MyHomePage(title: 'Flutter Demo Home Page'),
+        "Alarm": (context) => AlarmCreatePage(),
       },
     );
   }
@@ -38,6 +40,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   CLockPage _mainpage = CLockPage();
+  AlarmCreatePage _alarmCreatePage = AlarmCreatePage();
   @override
   void initState() {
     super.initState();
@@ -54,6 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Image(image: new AssetImage("assets/background.png")),
             Positioned(child: _mainpage),
             Positioned(
+              bottom: 50,
+              child: Container(
+                height: 100,
+                width: 300,
+                child: NotifyPage(),
+              ),
+            ),
+            Positioned(
                 child: FlatButton(
               height: 300,
               minWidth: 300,
@@ -65,10 +76,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pushNamed(context, "StopWatch");
               },
             )),
-            Positioned(
-                child: Column(
-              children: [],
-            ))
           ],
         ),
       ),
@@ -78,7 +85,9 @@ class _MyHomePageState extends State<MyHomePage> {
         elevation: 0,
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.white70,
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pushNamed(context, "Alarm");
+        },
         tooltip: 'Increment',
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
