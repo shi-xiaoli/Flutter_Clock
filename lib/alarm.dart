@@ -185,7 +185,7 @@ class _AlarmCreatePageState extends State<AlarmCreatePage> {
                     itemCount: 62),
               ))
         ,Positioned(child: Container(
-          child: ListView(children: [
+          child: ListView(children: [Text("")
             //TODO在这里加上闹钟的其他参数选择栏
           ],),
         ))

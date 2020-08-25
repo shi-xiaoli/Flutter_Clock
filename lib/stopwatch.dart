@@ -6,20 +6,27 @@ import "theme.dart" as theme;
 class StopWatchPage extends StatefulWidget {
   StopWatchPage({Key key, this.title}) : super(key: key) {}
   final String title;
+  var _stopwatch = new Stopwatch();
+  List<String> _records = [];
+  var _controller = ScrollController();
   @override
-  StopWatchPageState createState() => StopWatchPageState();
+  StopWatchPageState createState() {
+    return StopWatchPageState(
+        stopwatch: _stopwatch, records: _records, controller: _controller);
+  }
 }
 
 class StopWatchPageState extends State<StopWatchPage> {
-  Stopwatch _stopwatch = new Stopwatch();
+  StopWatchPageState({this.stopwatch, this.records, this.controller}) {}
+  Stopwatch stopwatch;
   Timer _timer;
   var _iconOfStart = Icons.play_arrow;
   int _h;
   int _s;
   int _m;
-  List<String> _records = [];
+  List<String> records;
   String _time = '00:00:00';
-  ScrollController _controller = ScrollController();
+  ScrollController controller;
 
   @override
   void initState() {
@@ -30,7 +37,7 @@ class StopWatchPageState extends State<StopWatchPage> {
   _setTime(Timer timer) {
     if (mounted) {
       setState(() {
-        _h = (_stopwatch.elapsedMilliseconds / 10).truncate();
+        _h = (stopwatch.elapsedMilliseconds / 10).truncate();
         _s = (_h / 100).truncate();
         _m = (_s / 60).truncate();
 
@@ -47,14 +54,13 @@ class StopWatchPageState extends State<StopWatchPage> {
   void dispose() {
     super.dispose();
     _timer.cancel();
-    _controller.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        alignment: Alignment(0,-0.8),
+        alignment: Alignment(0, -0.8),
         children: [
           Image(image: new AssetImage("assets/background.png")),
           Positioned(
@@ -62,17 +68,22 @@ class StopWatchPageState extends State<StopWatchPage> {
             height: 100,
             width: 300,
             child: ListView.separated(
-              itemCount: _records.length,
+              itemCount: records.length,
               itemBuilder: (context, index) {
                 return ListTile(
                   title: Text(
-                    _records[index],
-                    style: TextStyle(fontSize: 20, color: Colors.white),textAlign: TextAlign.center,
+                    records[index],
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                    textAlign: TextAlign.center,
                   ),
                 );
               },
-              separatorBuilder: (context, index) => Divider(height: 0.1,color: Colors.blue,endIndent: 1,),
-              controller: _controller,
+              separatorBuilder: (context, index) => Divider(
+                height: 0.1,
+                color: Colors.blue,
+                endIndent: 1,
+              ),
+              controller: controller,
             ),
           )),
           Positioned(
@@ -130,10 +141,10 @@ class StopWatchPageState extends State<StopWatchPage> {
                 onPressed: () {
                   if (_iconOfStart == Icons.stop) {
                     _iconOfStart = Icons.play_arrow;
-                    _stopwatch.stop();
+                    stopwatch.stop();
                   } else {
                     _iconOfStart = Icons.stop;
-                    _stopwatch.start();
+                    stopwatch.start();
                   }
                 },
               )),
@@ -149,8 +160,8 @@ class StopWatchPageState extends State<StopWatchPage> {
                 color: Colors.white70,
               ),
               onPressed: () {
-                _stopwatch.reset();
-                _records.clear();
+                stopwatch.reset();
+                records.clear();
               },
             ),
           ),
@@ -166,9 +177,9 @@ class StopWatchPageState extends State<StopWatchPage> {
                 color: Colors.white70,
               ),
               onPressed: () {
-                String id = (_records.length + 1).toString();
-                _records.add("第$id条记录\t\t$_time");
-                _controller.animateTo(_controller.position.maxScrollExtent,
+                String id = (records.length + 1).toString();
+                records.add("第$id条记录\t\t$_time");
+                controller.animateTo(controller.position.maxScrollExtent,
                     duration: Duration(seconds: 1), curve: Curves.bounceIn);
               },
             ),

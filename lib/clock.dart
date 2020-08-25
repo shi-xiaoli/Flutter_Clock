@@ -1,18 +1,58 @@
+import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:flare_dart/math/mat2d.dart';
+
+const PI = 3.1415926;
+
 class CLockPage extends StatefulWidget {
-  CLockPage({Key key, this.title}) : super(key: key) {}
+  CLockPage({Key key, this.title}) : super(key: key) {
+    _timer = new Timer.periodic(Duration(milliseconds: 10), _setTime);
+    _pState = _ClockPageState(time: _time, date: _date);
+  }
   final String title;
+
+  Timer _timer;
+  _ClockPageState _pState;
+  String _date = "";
+  String _time = "";
+  void change_state() {
+    if (_pState.state == 0) {
+      _pState.state = 1;
+    } else {
+      _pState.state = 0;
+    }
+    _pState.setState(() {});
+  }
+
+  _setTime(Timer timer) {
+    int h = DateTime.now().hour.truncate();
+    int m = DateTime.now().minute.truncate();
+    _date = DateTime.now().toUtc().toString().split(" ")[0];
+    String hStr = (h % 100).toString().padLeft(2, '0');
+    String mStr = (m % 60).toString().padLeft(2, '0');
+    _time = '$hStr:$mStr';
+    _pState.update(_time, _date);
+  }
+
   @override
-  _ClockPageState _pState = _ClockPageState();
   _ClockPageState createState() => _pState;
+
+  @override
   Widget getDrawer() => _pState.buildZoneList();
 }
 
-class _ClockPageState extends State<CLockPage> {
-  Timer _timer;
-  String _time = "00:00";
-  String _date = "0000-00-00";
+class _ClockPageState extends State<CLockPage> with FlareController {
+  _ClockPageState({this.time, this.date}) {}
+  String time;
+  String date;
+  int state = 0;
+  ActorNode _hour_ptr;
+  ActorNode _min_ptr;
+  ActorNode _sec_ptr;
+
   List<String> _citys = [
     "Pacific/Apia",
     "Pacific/Midway",
@@ -609,42 +649,62 @@ class _ClockPageState extends State<CLockPage> {
     "Etc/GMT-14",
     "Pacific/Kiritimati",
   ];
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
+
+  @override
+  void initialize(FlutterActorArtboard artboard) {
+    _hour_ptr = artboard.getNode("hour");
+    _min_ptr = artboard.getNode("minute");
+    _sec_ptr = artboard.getNode("seconds");
+  }
+
   @override
   void initState() {
     super.initState();
-    _timer = new Timer.periodic(Duration(milliseconds: 10), _setTime);
   }
 
-  _setTime(Timer timer) {
-    setState(() {
-      int h = DateTime.now().hour.truncate();
-      int m = DateTime.now().minute.truncate();
-      _date = DateTime.now().toUtc().toString().split(" ")[0];
-      String hStr = (h % 100).toString().padLeft(2, '0');
-      String mStr = (m % 60).toString().padLeft(2, '0');
-      _time = '$hStr:$mStr';
-    });
+  void update(String t, String d) {
+    time = t;
+    date = d;
+    setState(() {});
+  }
+
+  @override
+  bool advance(FlutterActorArtboard artboard, double elapsed) {
+    _sec_ptr.rotation = DateTime.now().second / 60.0 * 2 * PI;
+    _min_ptr.rotation = DateTime.now().minute / 60.0 * 2 * PI;
+    _hour_ptr.rotation = DateTime.now().hour / 24 * 4 * PI;
+    return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Positioned(
-            bottom: 300,
-            child: Container(
-              child: Text(_time,
-                  style: TextStyle(color: Colors.white70, fontSize: 70)),
-            )),
-        Positioned(
-            bottom: 250,
-            child: Container(
-              child: Text(_date,
-                  style: TextStyle(color: Colors.white70, fontSize: 20)),
-            )),
-      ],
-    );
+    if (state == 0)
+      return Stack(
+        alignment: Alignment.center,
+        children: [
+          Positioned(
+              bottom: 300,
+              child: Container(
+                child: Text(time,
+                    style: TextStyle(color: Colors.white70, fontSize: 70)),
+              )),
+          Positioned(
+              bottom: 250,
+              child: Container(
+                child: Text(date,
+                    style: TextStyle(color: Colors.white70, fontSize: 20)),
+              )),
+        ],
+      );
+    else
+      return Container(
+        width: 600,
+        height: 600,
+        child:FlareActor("assets/simulationClock.flr",
+          alignment: Alignment.center, fit: BoxFit.contain, controller: this));
   }
 
   Widget buildZoneList() {
