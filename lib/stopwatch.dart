@@ -59,7 +59,8 @@ class StopWatchPageState extends State<StopWatchPage> {
           Image(image: new AssetImage("assets/background.png")),
           Positioned(
               child: Container(
-            height: 200,
+            height: 100,
+            width: 300,
             child: ListView.separated(
               itemCount: _records.length,
               itemBuilder: (context, index) {
@@ -70,7 +71,7 @@ class StopWatchPageState extends State<StopWatchPage> {
                   ),
                 );
               },
-              separatorBuilder: (context, index) => Divider(height: .0),
+              separatorBuilder: (context, index) => Divider(height: 0.1,color: Colors.blue,endIndent: 1,),
               controller: _controller,
             ),
           )),
