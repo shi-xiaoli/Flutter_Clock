@@ -55,15 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
             Positioned(child: _mainpage),
             Positioned(
                 child: FlatButton(
-              height: 300,
-              minWidth: 300,
-              shape: CircleBorder(),
-              splashColor: Colors.white10,
-              color: Colors.transparent,
-              child: Text(""),
-              onPressed: () {
-                Navigator.pushNamed(context, "StopWatch");
-              },
+                  height: 300,
+                  minWidth: 300,
+                  shape: CircleBorder(),
+                  splashColor: Colors.white10,
+                  color: Colors.transparent,
+                  child: Text(""),
+                  onPressed: () {
+                   Navigator.pushNamed(context, "StopWatch");
+                },
             )),
             Positioned(
                 child: Column(
