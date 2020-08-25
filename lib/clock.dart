@@ -1,26 +1,35 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
+import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_weather_icons/flutter_weather_icons.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:http/http.dart' as http;
+import 'package:flare_dart/math/mat2d.dart';
 
 const key = 'a17d10bd349e432d99228b4331ed7628';
+const PI = 3.1415926;
 
 //实况天气  https://devapi.heweather.net/v7/weather/now?{请求参数}
 const baseurl = "https://devapi.heweather.net/v7/weather/now?";
 
 class CLockPage extends StatefulWidget {
   CLockPage({Key key, this.title}) : super(key: key) {}
+  _ClockPageState _state;
   final String title;
   @override
   _ClockPageState createState() {
     print("create");
-    return _ClockPageState();
+    return _state = _ClockPageState();
   }
 
+  void changeState() {
+    _state.state == 0 ? _state.state = 1 : _state.state = 0;
+  }
   // _update(Timer _timer) {
   //   //_pState.setTime();
   // }
@@ -28,8 +37,9 @@ class CLockPage extends StatefulWidget {
   Widget getDrawer() => _ClockPageState().buildCityList();
 }
 
-class _ClockPageState extends State<CLockPage> {
+class _ClockPageState extends State<CLockPage> with FlareController {
   Timer timer;
+  int state = 0;
   String _time = "00:00";
   String _date = "0000-00-00";
   String _weekday = "";
@@ -38,7 +48,9 @@ class _ClockPageState extends State<CLockPage> {
   WeatherData weather = WeatherData.empty();
   String cityname = '北京';
   String cityid = '101010100';
-
+  ActorNode _hour_ptr;
+  ActorNode _min_ptr;
+  ActorNode _sec_ptr;
   List<String> _chinacitys = [
     "北京市 101010100",
     "重庆市 101040100",
@@ -57,6 +69,24 @@ class _ClockPageState extends State<CLockPage> {
     "虎林市 101051102",
     "密山市 101051103"
   ];
+
+  @override
+  void initialize(FlutterActorArtboard artboard) {
+    _hour_ptr = artboard.getNode("hour");
+    _min_ptr = artboard.getNode("minute");
+    _sec_ptr = artboard.getNode("seconds");
+  }
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
+
+  @override
+  bool advance(FlutterActorArtboard artboard, double elapsed) {
+    _sec_ptr.rotation = DateTime.now().second / 60.0 * 2 * PI;
+    _min_ptr.rotation = DateTime.now().minute / 60.0 * 2 * PI;
+    _hour_ptr.rotation = DateTime.now().hour / 24.0 * 4 * PI;
+    return true;
+  }
 
   _getWeather() async {
     WeatherData data = await _fetchWeather();
@@ -129,37 +159,41 @@ class _ClockPageState extends State<CLockPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(alignment: Alignment.center, children: [
-      Positioned(
-          bottom: 300,
-          child: Column(children: [
-            Row(
-              children: <Widget>[
-                Column(children: <Widget>[
-                  Text(cityname,
-                      style: TextStyle(color: Colors.white70, fontSize: 20)),
-                  Text(_time,
-                      style: TextStyle(color: Colors.white70, fontSize: 65)),
-                ]),
-                SizedBox(
-                  width: 1,
-                  height: 90,
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(color: Colors.grey),
+    if (state == 0)
+      return Stack(alignment: Alignment.center, children: [
+        Positioned(
+            bottom: 300,
+            child: Column(children: [
+              Row(
+                children: <Widget>[
+                  Column(children: <Widget>[
+                    Text(cityname,
+                        style: TextStyle(color: Colors.white70, fontSize: 20)),
+                    Text(_time,
+                        style: TextStyle(color: Colors.white70, fontSize: 65)),
+                  ]),
+                  SizedBox(
+                    width: 1,
+                    height: 90,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.grey),
+                    ),
                   ),
-                ),
-                Container(
-                  child: _chooseweatherinfo(),
-                ),
-              ],
-            ),
-          ])),
-      Positioned(
-        bottom: 270,
-        child: Text("${_date} ${_weekday}",
-            style: TextStyle(color: Colors.white70, fontSize: 20)),
-      ),
-    ]);
+                  Container(
+                    child: _chooseweatherinfo(),
+                  ),
+                ],
+              ),
+            ])),
+        Positioned(
+          bottom: 270,
+          child: Text("${_date} ${_weekday}",
+              style: TextStyle(color: Colors.white70, fontSize: 20)),
+        ),
+      ]);
+    else
+      return FlareActor("assets/simulationClock.flr",
+            alignment: Alignment.center, fit: BoxFit.contain, controller: this);
   }
 
   Widget _chooseweatherinfo() {

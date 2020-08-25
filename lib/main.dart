@@ -10,7 +10,6 @@ void main() {
 
 var _stopWatchPage = new StopWatchPage();
 var _simulationPage = new SimulationPage();
-var _alarmCreatePage = new AlarmCreatePage();
 const CLOCK_EVENT = "clockEvent";
 
 class MyApp extends StatelessWidget {
@@ -110,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage>
                           color: Colors.transparent,
                           child: Text(""),
                           onPressed: () {
-                            Navigator.pushNamed(context, "Simulation");
+                            _mainpage.changeState();
                           },
                         )),
                     Positioned(
@@ -121,9 +120,7 @@ class _MyHomePageState extends State<MyHomePage>
                           color: Colors.white10,
                           splashColor: Colors.white30,
                           shape: CircleBorder(),
-                          onPressed: () {
-                            
-                          },
+                          onPressed: () {},
                           child: Icon(
                             Icons.add,
                             color: Colors.white,
