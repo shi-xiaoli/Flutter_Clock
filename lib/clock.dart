@@ -16,6 +16,8 @@ const PI = 3.1415926;
 
 //实况天气  https://devapi.heweather.net/v7/weather/now?{请求参数}
 const baseurl = "https://devapi.heweather.net/v7/weather/now?";
+WeatherData weather = WeatherData.empty();
+bool webRequest = false;
 
 class CLockPage extends StatefulWidget {
   CLockPage({Key key, this.title}) : super(key: key) {}
@@ -43,9 +45,7 @@ class _ClockPageState extends State<CLockPage> with FlareController {
   String _time = "00:00";
   String _date = "0000-00-00";
   String _weekday = "";
-  bool WebRequest = false;
   String errorinfo = "";
-  WeatherData weather = WeatherData.empty();
   String cityname = '北京';
   String cityid = '101010100';
   ActorNode _hour_ptr;
@@ -90,10 +90,7 @@ class _ClockPageState extends State<CLockPage> with FlareController {
 
   _getWeather() async {
     WeatherData data = await _fetchWeather();
-    setState(() {
-      print(1);
-      weather = data;
-    });
+    weather = data;
   }
 
   Future<WeatherData> _fetchWeather() async {
@@ -101,21 +98,13 @@ class _ClockPageState extends State<CLockPage> with FlareController {
         // 'https://devapi.heweather.net/v7/weather/now?location=${cityid}&key=${key}');
         '${baseurl}location=${cityid}&key=${key}');
     if (response.statusCode == 200) {
-      setState(() {
-        print(2);
-        WebRequest = true;
-      });
+      webRequest = true;
       return WeatherData.fromJson(json.decode(response.body));
     } else {
-      //print(response.statusCode);
-      setState(() {
-        print(3);
-        errorinfo = "获取天气信息失败";
-        WebRequest = false;
-      });
+      errorinfo = "获取天气信息失败";
+      webRequest = false;
       return new WeatherData();
     }
-    ;
   }
 
   @override
@@ -193,11 +182,11 @@ class _ClockPageState extends State<CLockPage> with FlareController {
       ]);
     else
       return FlareActor("assets/simulationClock.flr",
-            alignment: Alignment.center, fit: BoxFit.contain, controller: this);
+          alignment: Alignment.center, fit: BoxFit.contain, controller: this);
   }
 
   Widget _chooseweatherinfo() {
-    if (WebRequest) {
+    if (webRequest) {
       return Column(children: <Widget>[
         Row(children: <Widget>[
           Container(
