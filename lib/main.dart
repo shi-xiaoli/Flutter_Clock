@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'clock.dart';
 import 'stopwatch.dart';
 import 'alarm.dart';
+import 'simulationClock.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+var _stopWatchPage = new StopWatchPage();
+var _simulationPage = new SimulationPage();
 const CLOCK_EVENT = "clockEvent";
 
 class MyApp extends StatelessWidget {
@@ -21,9 +24,8 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
       routes: {
-        "StopWatch": (context) => StopWatchPage(),
-        "Home": (context) => MyHomePage(title: 'Flutter Demo Home Page'),
-        "Alarm": (context) => AlarmCreatePage(),
+        "StopWatch": (context) => _stopWatchPage,
+        "Simulation": (context) => _simulationPage
       },
     );
   }
@@ -38,23 +40,160 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
   CLockPage _mainpage = CLockPage();
+  TabController _tabController; //需要定义一个Controller
+  List tabs = ["闹钟", "秒表", "世界时钟"];
+
   AlarmCreatePage _alarmCreatePage = AlarmCreatePage();
   @override
   void initState() {
     super.initState();
+    _tabController = TabController(length: tabs.length, vsync: this);
+    // _tabController.addListener(() {
+    //   switch (_tabController.index) {
+    //     case 1:
+    //       print(1);
+    //       Navigator.pushNamed(context, "StopWatch");
+    //   }
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ConstrainedBox(
-        constraints: BoxConstraints.expand(),
+    return Container(
+      decoration: BoxDecoration(
+          image: DecorationImage(
+        image: ExactAssetImage('assets/background.png'),
+        fit: BoxFit.cover,
+      )),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          title: Text(
+            "时钟",
+            style: TextStyle(color: Colors.white),
+          ),
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          bottom: TabBar(
+              //生成Tab菜单
+              controller: _tabController,
+              tabs: tabs.map((e) => Tab(text: e)).toList()),
+        ),
+        body: TabBarView(
+          controller: _tabController,
+          children: tabs.map((e) {
+            if (e == "闹钟")
+              return Container(
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Positioned(child: _mainpage),
+                    Positioned(
+                      bottom: 50,
+                      child: Container(
+                        height: 100,
+                        width: 300,
+                        child: Container()//NotifyPage(),
+                      ),
+                    ),
+                    Positioned(
+                        top: 50,
+                        child: FlatButton(
+                          height: 300,
+                          minWidth: 300,
+                          shape: CircleBorder(),
+                          splashColor: Colors.white24,
+                          color: Colors.transparent,
+                          child: Text(""),
+                          onPressed: () {
+                            _mainpage.changeState();
+                          },
+                        )),
+                    Positioned(
+                        bottom: 50,
+                        child: FlatButton(
+                          height: 50,
+                          minWidth: 50,
+                          color: Colors.white10,
+                          splashColor: Colors.white30,
+                          shape: CircleBorder(),
+                          onPressed: () {},
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        ))
+                  ],
+                ),
+              );
+            if (e == "秒表") return _stopWatchPage;
+            return Container(
+              alignment: Alignment.center,
+              child: Text(e, textScaleFactor: 5),
+            );
+          }).toList(),
+        ),
+        drawer: _mainpage.getDrawer(),
+      ),
+    );
+  }
+}
+
+/* 
+Container(
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Positioned(child: _mainpage),
+              Positioned(
+                bottom: 50,
+                child: Container(
+                  height: 100,
+                  width: 300,
+                  child: NotifyPage(),
+                ),
+              ),
+              Positioned(
+                  top: 50,
+                  child: FlatButton(
+                    height: 300,
+                    minWidth: 300,
+                    shape: CircleBorder(),
+                    splashColor: Colors.white10,
+                    color: Colors.transparent,
+                    child: Text(""),
+                    onPressed: () {
+                      //Navigator.pushNamed(context, "StopWatch");
+                    },
+                  )),
+            ],
+          ),
+        ),
+
+
+Scaffold(
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        shadowColor: Colors.transparent,
+        actions: [
+
+      ],),
+      body: Container(
         child: Stack(
           alignment: Alignment.center,
           children: [
-            Image(image: new AssetImage("assets/background.png")),
+            Container(
+            decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(
+                'https://img.zcool.cn/community/0372d195ac1cd55a8012062e3b16810.jpg'),
+            fit: BoxFit.cover,
+          ),
+        )),
             Positioned(child: _mainpage),
             Positioned(
               bottom: 50,
@@ -66,6 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Positioned(
                 child: FlatButton(
+<<<<<<< HEAD
                   height: 300,
                   minWidth: 300,
                   shape: CircleBorder(),
@@ -75,6 +215,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                    Navigator.pushNamed(context, "StopWatch");
                 },
+=======
+              height: 300,
+              minWidth: 300,
+              shape: CircleBorder(),
+              splashColor: Colors.white10,
+              color: Colors.transparent,
+              child: Text(""),
+              onPressed: () {
+                //Navigator.pushNamed(context, "StopWatch");
+                _mainpage.change_state();
+              },
+>>>>>>> upstream/dev
             )),
           ],
         ),
@@ -92,5 +244,4 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-}
+  }*/

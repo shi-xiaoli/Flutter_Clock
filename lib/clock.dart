@@ -1,31 +1,68 @@
 import 'dart:core';
 import 'dart:async';
 import 'dart:convert';
+<<<<<<< HEAD
+=======
+import 'package:flare_flutter/flare.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/flare_controller.dart';
+>>>>>>> upstream/dev
 import 'package:flutter/material.dart';
 import 'package:flutter_weather_icons/flutter_weather_icons.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:http/http.dart' as http;
+<<<<<<< HEAD
 
 const key = 'a17d10bd349e432d99228b4331ed7628';
 
 //实况天气  https://devapi.heweather.net/v7/weather/now?{请求参数}
 const baseurl = "https://devapi.heweather.net/v7/weather/now?";
+=======
+import 'package:flare_dart/math/mat2d.dart';
+
+const key = 'a17d10bd349e432d99228b4331ed7628';
+const PI = 3.1415926;
+
+//实况天气  https://devapi.heweather.net/v7/weather/now?{请求参数}
+const baseurl = "https://devapi.heweather.net/v7/weather/now?";
+WeatherData weather = WeatherData.empty();
+bool webRequest = false;
+>>>>>>> upstream/dev
 
 class CLockPage extends StatefulWidget {
   CLockPage({Key key, this.title}) : super(key: key) {}
+  _ClockPageState _state;
   final String title;
   @override
+<<<<<<< HEAD
   _ClockPageState _pState = _ClockPageState();
   _ClockPageState createState() => _pState;
   Widget getDrawer() => _pState.buildCityList();
+=======
+  _ClockPageState createState() {
+    print("create");
+    return _state = _ClockPageState();
+  }
+
+  void changeState() {
+    _state.state == 0 ? _state.state = 1 : _state.state = 0;
+  }
+  // _update(Timer _timer) {
+  //   //_pState.setTime();
+  // }
+
+  Widget getDrawer() => _ClockPageState().buildCityList();
+>>>>>>> upstream/dev
 }
 
-class _ClockPageState extends State<CLockPage> {
-  Timer _timer;
+class _ClockPageState extends State<CLockPage> with FlareController {
+  Timer timer;
+  int state = 0;
   String _time = "00:00";
   String _date = "0000-00-00";
   String _weekday = "";
+<<<<<<< HEAD
   bool WebRequest = false;
   WeatherData weather = WeatherData.empty();
   String cityname = '北京';
@@ -37,8 +74,8 @@ class _ClockPageState extends State<CLockPage> {
     "天津 101030100",
     "香港 101320101",
     "九龙 101320102",
-    "新界 101320103"
-        "澳门 101330101",
+    "新界 101320103",
+    "澳门 101330101",
     "氹仔岛 101330102",
     "路环岛 101330103",
     "石家庄 101090101",
@@ -52,8 +89,8 @@ class _ClockPageState extends State<CLockPage> {
     "沧州 101090701",
     "廊坊 101090601",
     "衡水 101090801",
-    "雄安 101091201"
-        "太原 101100101",
+    "雄安 101091201",
+    "太原 101100101",
     "大同 101100201",
     "阳泉 101100301",
     "长治 101100501",
@@ -99,7 +136,6 @@ class _ClockPageState extends State<CLockPage> {
     "松原 101060801",
     "白城 101060601",
     "延边朝鲜自治州 101060301",
-    "吉林省长白山保护开发区",
     "哈尔滨 101050101",
     "大庆 101050901",
     "佳木斯 101050401",
@@ -243,7 +279,6 @@ class _ClockPageState extends State<CLockPage> {
     "永州 101251401",
     "怀化 101251201",
     "娄底 101250801",
-    "湘西土家族苗族自治州 101251501",
     "广州 101280101",
     "韶关 101280201",
     "深圳 101280601",
@@ -438,11 +473,82 @@ class _ClockPageState extends State<CLockPage> {
   }
 
 
+=======
+  String errorinfo = "";
+  String cityname = '北京';
+  String cityid = '101010100';
+  ActorNode _hour_ptr;
+  ActorNode _min_ptr;
+  ActorNode _sec_ptr;
+  List<String> _chinacitys = [
+    "北京市 101010100",
+    "重庆市 101040100",
+    "上海市 101020100",
+    "天津市 101030100",
+    "香港 101320101",
+    "澳门 101330101",
+    "哈尔滨市 101050101",
+    "阿城市 101050104",
+    "双城市 101050102",
+    "尚志市 101050111",
+    "五常市 101050112",
+    "齐齐哈尔市 101050201",
+    "讷河市 101050202",
+    "鸡西市 101051101",
+    "虎林市 101051102",
+    "密山市 101051103"
+  ];
+
+  @override
+  void initialize(FlutterActorArtboard artboard) {
+    _hour_ptr = artboard.getNode("hour");
+    _min_ptr = artboard.getNode("minute");
+    _sec_ptr = artboard.getNode("seconds");
+  }
+
+  @override
+  void setViewTransform(Mat2D viewTransform) {}
+
+  @override
+  bool advance(FlutterActorArtboard artboard, double elapsed) {
+    _sec_ptr.rotation = DateTime.now().second / 60.0 * 2 * PI;
+    _min_ptr.rotation = DateTime.now().minute / 60.0 * 2 * PI;
+    _hour_ptr.rotation = DateTime.now().hour / 24.0 * 4 * PI;
+    return true;
+  }
+
+  _getWeather() async {
+    WeatherData data = await _fetchWeather();
+    weather = data;
+  }
+
+  Future<WeatherData> _fetchWeather() async {
+    final response = await http.get(
+        // 'https://devapi.heweather.net/v7/weather/now?location=${cityid}&key=${key}');
+        '${baseurl}location=${cityid}&key=${key}');
+    if (response.statusCode == 200) {
+      webRequest = true;
+      return WeatherData.fromJson(json.decode(response.body));
+    } else {
+      errorinfo = "获取天气信息失败";
+      webRequest = false;
+      return new WeatherData();
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    timer.cancel();
+    print("dispose");
+  }
+>>>>>>> upstream/dev
 
   @override
   void initState() {
     super.initState();
-    _timer = new Timer.periodic(Duration(milliseconds: 10), _setTime);
+    timer = new Timer.periodic(Duration(milliseconds: 10), _setTime);
   }
 
   _setTime(Timer timer) {
@@ -451,6 +557,7 @@ class _ClockPageState extends State<CLockPage> {
       int m = DateTime.now().minute.truncate();
       _date = DateTime.now().toString().split(" ")[0];
       String twd = DateTime.now().weekday.toString();
+<<<<<<< HEAD
       if(twd == '1')
         _weekday = "周一";
       else  if(twd == '2')
@@ -465,6 +572,21 @@ class _ClockPageState extends State<CLockPage> {
         _weekday = "周六";
       else  if(twd == '7')
         _weekday = "周日";
+=======
+      if (twd == '1')
+        _weekday = "周一";
+      else if (twd == '2')
+        _weekday = "周二";
+      else if (twd == '3')
+        _weekday = "周三";
+      else if (twd == '4')
+        _weekday = "周四";
+      else if (twd == '5')
+        _weekday = "周五";
+      else if (twd == '6')
+        _weekday = "周六";
+      else if (twd == '7') _weekday = "周日";
+>>>>>>> upstream/dev
       String hStr = (h % 100).toString().padLeft(2, '0');
       String mStr = (m % 60).toString().padLeft(2, '0');
       _time = '$hStr:$mStr ';
@@ -473,6 +595,7 @@ class _ClockPageState extends State<CLockPage> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
       return Stack(
         alignment: Alignment.center,
         children: [
@@ -587,6 +710,109 @@ class _ClockPageState extends State<CLockPage> {
        );
    }
 
+=======
+    if (state == 0)
+      return Stack(alignment: Alignment.center, children: [
+        Positioned(
+            bottom: 300,
+            child: Column(children: [
+              Row(
+                children: <Widget>[
+                  Column(children: <Widget>[
+                    Text(cityname,
+                        style: TextStyle(color: Colors.white70, fontSize: 20)),
+                    Text(_time,
+                        style: TextStyle(color: Colors.white70, fontSize: 65)),
+                  ]),
+                  SizedBox(
+                    width: 1,
+                    height: 90,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.grey),
+                    ),
+                  ),
+                  Container(
+                    child: _chooseweatherinfo(),
+                  ),
+                ],
+              ),
+            ])),
+        Positioned(
+          bottom: 270,
+          child: Text("${_date} ${_weekday}",
+              style: TextStyle(color: Colors.white70, fontSize: 20)),
+        ),
+      ]);
+    else
+      return FlareActor("assets/simulationClock.flr",
+          alignment: Alignment.center, fit: BoxFit.contain, controller: this);
+  }
+
+  Widget _chooseweatherinfo() {
+    if (webRequest) {
+      return Column(children: <Widget>[
+        Row(children: <Widget>[
+          Container(
+            child: _chooseicon(),
+          ),
+          Text(weather.cond,
+              style: TextStyle(color: Colors.white70, fontSize: 20)),
+        ]),
+        Text(weather.tmp,
+            style: TextStyle(color: Colors.white70, fontSize: 20)),
+        Text(weather.win,
+            style: TextStyle(color: Colors.white70, fontSize: 15)),
+      ]);
+    } else {
+      return Column(children: <Widget>[
+        Text("暂无天气信息", style: TextStyle(color: Colors.white70, fontSize: 15))
+      ]);
+    }
+  }
+
+  Widget _chooseicon() {
+    if (weather.cond == "晴") {
+      if ((DateTime.now().hour.truncate()) % 100 > 5 &&
+          (DateTime.now().hour.truncate()) % 100 < 20)
+        return Icon(
+          WeatherIcons.wiDaySunny,
+          color: Colors.red,
+        );
+      else
+        return Icon(
+          WeatherIcons.wiMoonAltFull,
+          color: Colors.green,
+        );
+    } else if (weather.cond == "阴")
+      return Icon(
+        WeatherIcons.wiCloud,
+        color: Colors.green,
+      );
+    else if (weather.cond == "多云")
+      return Icon(
+        WeatherIcons.wiCloudy,
+        color: Colors.green,
+      );
+    else if (weather.cond == "雨" ||
+        weather.cond == "小雨" ||
+        weather.cond == "大雨")
+      return Icon(
+        WeatherIcons.wiDayRain,
+        color: Colors.green,
+      );
+    else if (weather.cond == "雪" || weather.cond == "大雪")
+      return Icon(
+        WeatherIcons.wiDaySnow,
+        color: Colors.green,
+      );
+    else
+      return Icon(
+        WeatherIcons.wiDaySnow,
+        color: Colors.green,
+      );
+  }
+
+>>>>>>> upstream/dev
   Widget buildCityList() {
     return new ListView.builder(
       itemCount: _chinacitys.length,
@@ -611,7 +837,11 @@ class _ClockPageState extends State<CLockPage> {
   }
 }
 
+<<<<<<< HEAD
 class WeatherData{
+=======
+class WeatherData {
+>>>>>>> upstream/dev
   String cond; //天气
   String tmp; //温度
   String hum; //湿度
@@ -622,9 +852,16 @@ class WeatherData{
   factory WeatherData.fromJson(Map<String, dynamic> json) {
     return WeatherData(
       cond: json['now']['text'],
+<<<<<<< HEAD
       tmp: json['now']['temp']+"°",
       hum: "湿度  "+json['now']['humidity']+"%",
       win: "   "+json['now']['windDir']+" "+json['now']['windScale']+"级",
+=======
+      tmp: json['now']['temp'] + "°",
+      hum: "湿度  " + json['now']['humidity'] + "%",
+      win:
+          "   " + json['now']['windDir'] + " " + json['now']['windScale'] + "级",
+>>>>>>> upstream/dev
     );
   }
 
