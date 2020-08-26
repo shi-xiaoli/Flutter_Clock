@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage>
                       child: Container(
                         height: 100,
                         width: 300,
-                        child: NotifyPage(),
+                        child: Container()//NotifyPage(),
                       ),
                     ),
                     Positioned(
